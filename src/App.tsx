@@ -5,7 +5,7 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchTeas = async () => {
+    const initTeas = async () => {
       setLoading(true);
       try {
         const res = await fetch("http://localhost:3000/teas");
@@ -18,7 +18,7 @@ function App() {
       }
     };
 
-    fetchTeas();
+    initTeas();
   }, []);
 
   if (loading) return <p className="text-center mt-8">Loading teas...</p>;
