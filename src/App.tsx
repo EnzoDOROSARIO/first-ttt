@@ -1,27 +1,11 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
+import { useTeaAdapter } from "./teaContext.tsx";
 
 function App() {
-  const [teas, setTeas] = useState<{ name: string; description: string }[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: teas, isLoading } = useGetTeas();
 
-  useEffect(() => {
-    const initTeas = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch("http://localhost:3000/teas");
-        const json = await res.json();
-        setTeas(json.data);
-      } catch (error) {
-        console.error("Error fetching teas:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    initTeas();
-  }, []);
-
-  if (loading) return <p className="text-center mt-8">Loading teas...</p>;
+  if (isLoading) return <p className="text-center mt-8">Loading teas...</p>;
+  if (!teas) return <p className="text-center mt-8">No teas found</p>;
 
   return (
     <div className="mx-4">
@@ -43,6 +27,10 @@ function App() {
                 <dt className="sr-only">Description</dt>
                 <dd className="text-gray-500 text-sm">{t.description}</dd>
               </dl>
+              <p className="mt-4 text-gray-500 text-sm">
+                <b>Color: </b>
+                {t.color}
+              </p>
             </div>
           </li>
         ))}
@@ -50,5 +38,10 @@ function App() {
     </div>
   );
 }
+
+const useGetTeas = () => {
+  const { fetchTeas } = useTeaAdapter();
+  return useQuery(["teas", "list"], fetchTeas);
+};
 
 export default App;
